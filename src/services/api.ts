@@ -2,7 +2,7 @@ import { FacultyProfile, StudentProfile, User, UserRole } from '../types/erp';
 
 export const API_BASE_URL =
   (import.meta.env?.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ||
-  '/api/v1';
+  'http://localhost:8080/api/v1';
 
 const SESSION_KEY = 'smart_campus_session_v1';
 

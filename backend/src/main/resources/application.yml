@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: smart-campus-api
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/smart_campus?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true}
+    username: ${DB_USER:smart_campus}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: smart-campus-pool
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: ${DB_POOL_MIN_IDLE:2}
+      connection-timeout: 10000
+      validation-timeout: 5000
+  sql:
+    init:
+      mode: ${DB_INIT_MODE:always}
+      encoding: UTF-8
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+      continue-on-error: false
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: ${PORT:${SERVER_PORT:8080}}
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:change-this-development-secret-in-production-please-32chars}
+    ttl-minutes: ${APP_JWT_TTL_MINUTES:480}
+    issuer: smart-campus-erp
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+  academic:
+    fixed-date: ${APP_ACADEMIC_DATE:2026-10-20}
+  demo:
+    enabled: ${APP_DEMO_ENABLED:true}
+
+logging:
+  level:
+    root: INFO
+    com.smartcampus.erp: INFO
+    org.springframework.jdbc.core: INFO

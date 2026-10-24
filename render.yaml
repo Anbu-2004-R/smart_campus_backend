@@ -1,12 +1,21 @@
 services:
   - type: web
-    name: smart-campus-erp
+    name: smart-campus-backend
     runtime: docker
     plan: free
     region: oregon
     dockerfilePath: ./Dockerfile
     envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
+      - key: SERVER_PORT
         value: 10000
+      - key: DB_INIT_MODE
+        value: always
+      - key: APP_DEMO_ENABLED
+        value: "true"
+      # Configure your database connection in Render dashboard:
+      # - key: DB_URL
+      #   value: jdbc:mysql://<host>:<port>/smart_campus?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      # - key: DB_USER
+      #   value: smart_campus
+      # - key: DB_PASSWORD
+      #   sync: false

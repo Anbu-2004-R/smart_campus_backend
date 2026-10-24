@@ -1,40 +1,25 @@
-# Multi-stage Dockerfile optimized for Render deployment
-# Stage 1: Build assets
-FROM node:22-alpine AS builder
-
+# Multi-stage Dockerfile for Java 21 Spring Boot + JDBC Backend (Render deployment)
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-# Install dependencies (including build tools)
-COPY package*.json ./
-RUN npm install
+# Copy Maven wrapper and POM from backend
+COPY backend/pom.xml ./
+COPY backend/.mvn ./.mvn
+COPY backend/mvnw ./
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline -B || true
 
-# Copy application source code
-COPY . .
+# Copy source and build
+COPY backend/src ./src
+RUN ./mvnw clean package -DskipTests
 
-# Build client-side assets to /app/dist
-RUN npm run build
-
-# Stage 2: Production runtime
-FROM node:22-alpine AS runner
-
+# Runtime stage
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-ENV NODE_ENV=production
-# Render automatically injects PORT (default 10000)
-ENV PORT=10000
+COPY --from=build /app/target/*.jar app.jar
 
-# Install production-only dependencies
-COPY package*.json ./
-RUN npm install --omit=dev
+ENV SERVER_PORT=8080
+EXPOSE 8080 10000
 
-# Copy compiled frontend and backend server files
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server.ts ./server.ts
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-
-# Expose Render standard port
-EXPOSE 10000
-
-# Start unified backend & frontend server
-CMD ["npm", "start"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
