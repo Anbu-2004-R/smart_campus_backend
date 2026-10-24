@@ -1,0 +1,6 @@
+{
+  "name": "Smart Campus ERP - Academic & Campus Management System",
+  "description": "Unified academic and campus management platform for Administrators, Faculty, and Students with full attendance, marks, grading, timetable, complaints, and audit workflows.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
